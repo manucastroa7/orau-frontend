@@ -1,0 +1,7 @@
+{
+  "name": "ORAU - Orgullo Austral",
+  "description": "Tienda boutique de indumentaria con identidad argentina minimalista y moderna, diseñada en España.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
