@@ -350,13 +350,41 @@ const Products: React.FC = () => {
                                 {formData.images.map((img, index) => (
                                     <div key={index} className="relative aspect-[4/5] rounded-lg overflow-hidden border border-zinc-200 group">
                                         <img src={img} alt={`Product ${index}`} className="w-full h-full object-cover" />
-                                        <button
-                                            type="button"
-                                            onClick={() => removeImage(index)}
-                                            className="absolute top-2 right-2 bg-black/50 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
-                                        >
-                                            <X size={14} />
-                                        </button>
+
+                                        {/* Main Image Indicator */}
+                                        {index === 0 && (
+                                            <div className="absolute top-2 left-2 bg-zinc-900/80 text-white text-[9px] px-2 py-1 rounded-full backdrop-blur-sm uppercase tracking-wide font-bold shadow-sm">
+                                                Principal
+                                            </div>
+                                        )}
+
+                                        <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button
+                                                type="button"
+                                                onClick={() => removeImage(index)}
+                                                className="bg-black/50 text-white p-1.5 rounded-full hover:bg-red-500 transition-colors backdrop-blur-sm"
+                                                title="Eliminar"
+                                            >
+                                                <X size={14} />
+                                            </button>
+                                            {index !== 0 && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setFormData(prev => {
+                                                            const newImages = [...prev.images];
+                                                            const [movedImage] = newImages.splice(index, 1);
+                                                            newImages.unshift(movedImage);
+                                                            return { ...prev, images: newImages };
+                                                        });
+                                                    }}
+                                                    className="bg-black/50 text-white p-1.5 rounded-full hover:bg-yellow-500 transition-colors backdrop-blur-sm"
+                                                    title="Hacer Principal"
+                                                >
+                                                    <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 ))}
                                 <div className="border-2 border-dashed border-zinc-200 rounded-lg flex flex-col items-center justify-center p-4 hover:bg-zinc-50 transition-colors relative aspect-[4/5]">
