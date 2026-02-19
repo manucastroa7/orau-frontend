@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../../services/api';
-import { Mail, Calendar, User, MessageSquare, AlertCircle } from 'lucide-react';
+import { Mail, Calendar, User, MessageSquare, AlertCircle, Phone } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Lead {
     id: string;
     name: string;
     email: string;
+    phone?: string;
     message: string;
     productName?: string;
     productId?: string;
@@ -38,6 +39,7 @@ const Leads: React.FC = () => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
+        phone: '',
         message: '',
         status: 'new'
     });
@@ -48,7 +50,7 @@ const Leads: React.FC = () => {
             await api.createLead(formData);
             toast.success('Cliente agregado correctamente');
             setShowModal(false);
-            setFormData({ name: '', email: '', message: '', status: 'new' });
+            setFormData({ name: '', email: '', phone: '', message: '', status: 'new' });
             loadLeads();
         } catch (error) {
             console.error('Error creating lead', error);
@@ -98,9 +100,8 @@ const Leads: React.FC = () => {
                                 <tr>
                                     <th className="px-6 py-4 text-xs font-bold text-zinc-500 uppercase tracking-wider">Fecha</th>
                                     <th className="px-6 py-4 text-xs font-bold text-zinc-500 uppercase tracking-wider">Cliente</th>
-                                    <th className="px-6 py-4 text-xs font-bold text-zinc-500 uppercase tracking-wider">Interés</th>
                                     <th className="px-6 py-4 text-xs font-bold text-zinc-500 uppercase tracking-wider">Mensaje</th>
-                                    <th className="px-6 py-4 text-xs font-bold text-zinc-500 uppercase tracking-wider">Estado</th>
+                                    <th className="px-6 py-4 text-xs font-bold text-zinc-500 uppercase tracking-wider">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-zinc-100">
@@ -127,17 +128,20 @@ const Leads: React.FC = () => {
                                                     <a href={`mailto:${lead.email}`} className="text-xs text-zinc-500 hover:text-blue-600 transition-colors flex items-center gap-1">
                                                         {lead.email}
                                                     </a>
+                                                    {lead.phone && (
+                                                        <span className="text-xs text-zinc-500 block">
+                                                            Ph: {lead.phone}
+                                                        </span>
+                                                    )}
+                                                    {lead.productName && (
+                                                        <div className="mt-1">
+                                                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-zinc-100 text-zinc-600 border border-zinc-200">
+                                                                Int: {lead.productName}
+                                                            </span>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            {lead.productName ? (
-                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-zinc-100 text-zinc-800 border border-zinc-200">
-                                                    {lead.productName}
-                                                </span>
-                                            ) : (
-                                                <span className="text-zinc-400 text-sm">-</span>
-                                            )}
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex items-start gap-2 max-w-xs">
@@ -148,15 +152,37 @@ const Leads: React.FC = () => {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${lead.status === 'new'
-                                                ? 'bg-blue-50 text-blue-700 border-blue-200'
-                                                : lead.status === 'contacted'
-                                                    ? 'bg-green-50 text-green-700 border-green-200'
-                                                    : 'bg-zinc-100 text-zinc-600 border-zinc-200'
-                                                }`}>
-                                                {lead.status === 'new' && <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />}
-                                                {lead.status === 'new' ? 'Nuevo' : lead.status === 'contacted' ? 'Contactado' : lead.status}
-                                            </span>
+                                            <div className="flex gap-2">
+                                                {lead.phone && (
+                                                    <a
+                                                        href={`https://wa.me/${lead.phone.replace(/\D/g, '')}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors border border-green-200"
+                                                        title="Contactar por WhatsApp"
+                                                    >
+                                                        <Phone size={16} />
+                                                    </a>
+                                                )}
+                                                <a
+                                                    href={`mailto:${lead.email}?subject=Respuesta a su consulta sobre ${lead.productName || 'ORAU'}`}
+                                                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200"
+                                                    title="Enviar Correo"
+                                                >
+                                                    <Mail size={16} />
+                                                </a>
+                                            </div>
+                                            <div className="mt-2">
+                                                <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium border ${lead.status === 'new'
+                                                    ? 'bg-blue-50 text-blue-700 border-blue-200'
+                                                    : lead.status === 'contacted'
+                                                        ? 'bg-green-50 text-green-700 border-green-200'
+                                                        : 'bg-zinc-100 text-zinc-600 border-zinc-200'
+                                                    }`}>
+                                                    {lead.status === 'new' && <div className="w-1 h-1 rounded-full bg-blue-500 animate-pulse" />}
+                                                    {lead.status === 'new' ? 'Nuevo' : lead.status === 'contacted' ? 'Contactado' : lead.status}
+                                                </span>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
@@ -193,6 +219,15 @@ const Leads: React.FC = () => {
                                     className="w-full bg-zinc-50 border border-zinc-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900"
                                     value={formData.email}
                                     onChange={e => setFormData({ ...formData, email: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Teléfono</label>
+                                <input
+                                    className="w-full bg-zinc-50 border border-zinc-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900"
+                                    value={formData.phone}
+                                    onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                                    placeholder="+598 99 123 456"
                                 />
                             </div>
                             <div>

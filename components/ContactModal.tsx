@@ -14,6 +14,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ product, onClose, initialMe
     const [formData, setFormData] = useState({
         name: '',
         email: '',
+        phone: '',
         message: initialMessage || `Hola, estoy interesado en el producto "${product.name}". Me gustaría recibir más información.`
     });
     const [loading, setLoading] = useState(false);
@@ -27,6 +28,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ product, onClose, initialMe
                 productName: product.name,
                 userName: formData.name,
                 userEmail: formData.email,
+                phone: formData.phone,
                 message: formData.message
             });
             toast.success('Consulta enviada con éxito. Te responderemos a la brevedad.');
@@ -76,6 +78,16 @@ const ContactModal: React.FC<ContactModalProps> = ({ product, onClose, initialMe
                             value={formData.email}
                             onChange={e => setFormData({ ...formData, email: e.target.value })}
                             placeholder="tu@email.com"
+                        />
+                    </div>
+                    <div>
+                        <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1">Teléfono (Opcional)</label>
+                        <input
+                            type="tel"
+                            className="w-full bg-zinc-50 border border-zinc-200 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-zinc-200 outline-none transition-all"
+                            value={formData.phone}
+                            onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                            placeholder="+598 99 123 456"
                         />
                     </div>
                     <div>

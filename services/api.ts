@@ -69,14 +69,9 @@ export const api = {
         await axios.delete(`${API_URL}/sales/${id}`);
     },
 
-    async sendContactEmail(data: { productId: string; productName: string; userName: string; userEmail: string; message: string }) {
-        const response = await fetch(`${API_URL}/mail/contact`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
-        });
-        if (!response.ok) throw new Error('Failed to send email');
-        return response.json();
+    async sendContactEmail(data: { productId: string; productName: string; userName: string; userEmail: string; message: string; phone?: string }) {
+        const response = await axios.post(`${API_URL}/mail/contact`, data);
+        return response.data;
     },
 
     async getLeads(): Promise<any[]> {
