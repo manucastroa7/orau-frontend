@@ -74,7 +74,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
           </button>
         </div>
       </div>
-      <div className="mt-6 text-center">
+      <div className="mt-3 text-center">
         <h3 className="text-sm font-medium tracking-wide uppercase">{product.name}</h3>
         <p className="mt-1 text-zinc-500 text-sm tracking-widest">{product.price}€</p>
         <div className="mt-2 flex justify-center space-x-2">
