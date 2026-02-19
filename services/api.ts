@@ -45,6 +45,13 @@ export const api = {
         return response.data;
     },
 
+    async updateCategory(id: string, category: Partial<Category>): Promise<Category> {
+        const response = await axios.patch(`${API_URL}/categories/${id}`, category);
+        return response.data;
+    },
+
+
+
     async deleteCategory(id: string): Promise<void> {
         await axios.delete(`${API_URL}/categories/${id}`);
     },
