@@ -89,5 +89,9 @@ export const api = {
     async createLead(lead: any): Promise<any> {
         const response = await axios.post(`${API_URL}/leads`, lead);
         return response.data;
+    },
+
+    async deleteLead(id: string): Promise<void> {
+        await axios.delete(`${API_URL}/leads/${id}`);
     }
 };

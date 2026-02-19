@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../../services/api';
-import { Mail, Calendar, User, MessageSquare, AlertCircle, Phone } from 'lucide-react';
+import { Mail, Calendar, User, MessageSquare, AlertCircle, Phone, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Lead {
@@ -32,6 +32,18 @@ const Leads: React.FC = () => {
             toast.error('Error al cargar los contactos');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!window.confirm('¿Estás seguro de eliminar este contacto?')) return;
+        try {
+            await api.deleteLead(id);
+            setLeads(prev => prev.filter(l => l.id !== id));
+            toast.success('Contacto eliminado correctamente');
+        } catch (error) {
+            console.error('Error deleting lead', error);
+            toast.error('Error al eliminar contacto');
         }
     };
 
@@ -171,6 +183,13 @@ const Leads: React.FC = () => {
                                                 >
                                                     <Mail size={16} />
                                                 </a>
+                                                <button
+                                                    onClick={() => handleDelete(lead.id)}
+                                                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-red-200"
+                                                    title="Eliminar Contacto"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
                                             </div>
                                             <div className="mt-2">
                                                 <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium border ${lead.status === 'new'

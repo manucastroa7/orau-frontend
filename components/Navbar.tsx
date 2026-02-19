@@ -25,9 +25,24 @@ const Navbar: React.FC<NavbarProps> = ({ onAdminClick, isAdmin, onLogout }) => {
         </div>
 
         <div className="flex-1 flex justify-center">
-          <h1 className="brand-font text-3xl tracking-tighter cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            ORAU
-          </h1>
+          <div
+            className="cursor-pointer transition-all duration-500"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
+            {isScrolled ? (
+              <div className="h-12 w-32 relative overflow-hidden flex items-center justify-center">
+                <img
+                  src="/logo-dorado.png"
+                  alt="ORAU"
+                  className="absolute inset-0 w-full h-full object-contain scale-[3.5] animate-fade-in drop-shadow-sm"
+                />
+              </div>
+            ) : (
+              <h1 className="brand-font text-3xl tracking-tighter whitespace-nowrap animate-fade-in">
+                ORGULLO AUSTRAL
+              </h1>
+            )}
+          </div>
         </div>
 
         <div className="flex-1 flex justify-end space-x-6 items-center">
