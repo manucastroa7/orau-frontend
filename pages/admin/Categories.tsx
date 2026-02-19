@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Category } from '../../types';
 import { api } from '../../services/api';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Pencil } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Categories: React.FC = () => {
     const [categories, setCategories] = useState<Category[]>([]);
     const [showAddForm, setShowAddForm] = useState(false);
+    const [editingId, setEditingId] = useState<string | null>(null);
     const [formData, setFormData] = useState({
         name: '',
         description: ''
@@ -28,15 +29,31 @@ const Categories: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const created = await api.createCategory(formData);
-            setCategories(prev => [...prev, created]);
+            if (editingId) {
+                const updated = await api.updateCategory(editingId, formData);
+                setCategories(prev => prev.map(c => c.id === editingId ? updated : c));
+                toast.success('Categoría actualizada con éxito');
+            } else {
+                const created = await api.createCategory(formData);
+                setCategories(prev => [...prev, created]);
+                toast.success('Categoría creada con éxito');
+            }
             setFormData({ name: '', description: '' });
             setShowAddForm(false);
-            toast.success('Categoría creada con éxito');
+            setEditingId(null);
         } catch (error) {
-            console.error('Error creating category', error);
-            toast.error('Error al crear categoría');
+            console.error('Error saving category', error);
+            toast.error('Error al guardar categoría');
         }
+    };
+
+    const handleEdit = (category: Category) => {
+        setFormData({
+            name: category.name,
+            description: category.description || ''
+        });
+        setEditingId(category.id);
+        setShowAddForm(true);
     };
 
     const handleDelete = async (id: string) => {
@@ -86,6 +103,12 @@ const Categories: React.FC = () => {
                                     <td className="px-6 py-4 text-sm text-zinc-500">{category.description || '-'}</td>
                                     <td className="px-6 py-4 text-right">
                                         <button
+                                            onClick={() => handleEdit(category)}
+                                            className="text-zinc-400 hover:text-blue-500 transition-colors p-2 rounded-full hover:bg-blue-50 mr-2"
+                                        >
+                                            <Pencil size={18} />
+                                        </button>
+                                        <button
                                             onClick={() => handleDelete(category.id)}
                                             className="text-zinc-400 hover:text-red-500 transition-colors p-2 rounded-full hover:bg-red-50"
                                         >
@@ -107,8 +130,17 @@ const Categories: React.FC = () => {
             ) : (
                 <div className="max-w-2xl bg-white p-8 rounded-xl shadow-sm border border-zinc-200">
                     <div className="flex justify-between items-center mb-6 border-b border-zinc-100 pb-4">
-                        <h3 className="text-xl font-bold text-zinc-800">Nueva Categoría</h3>
-                        <button onClick={() => setShowAddForm(false)} className="text-zinc-400 hover:text-zinc-600 text-sm">Cancelar</button>
+                        <h3 className="text-xl font-bold text-zinc-800">{editingId ? 'Editar Categoría' : 'Nueva Categoría'}</h3>
+                        <button
+                            onClick={() => {
+                                setShowAddForm(false);
+                                setEditingId(null);
+                                setFormData({ name: '', description: '' });
+                            }}
+                            className="text-zinc-400 hover:text-zinc-600 text-sm"
+                        >
+                            Cancelar
+                        </button>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
@@ -137,7 +169,7 @@ const Categories: React.FC = () => {
                                 type="submit"
                                 className="w-full bg-zinc-900 text-white py-3 rounded-lg font-bold tracking-widest hover:bg-black transition-all shadow-lg text-sm uppercase"
                             >
-                                Crear Categoría
+                                {editingId ? 'Guardar Cambios' : 'Crear Categoría'}
                             </button>
                         </div>
                     </form>
