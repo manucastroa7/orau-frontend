@@ -50,3 +50,21 @@ export interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
 }
+
+export enum SectionType {
+  PRODUCT_GRID = 'PRODUCT_GRID',
+  BANNER = 'BANNER',
+  TEXT = 'TEXT',
+}
+
+export interface Section {
+  id: string;
+  title: string;
+  subtitle?: string;
+  type: SectionType;
+  content: any; // e.g., { categoryId: '...', imageUrl: '...', textBody: '...' }
+  order: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}

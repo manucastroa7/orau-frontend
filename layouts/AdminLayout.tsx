@@ -62,6 +62,16 @@ const AdminLayout: React.FC = () => {
                     </NavLink>
 
                     <NavLink
+                        to="/admin/sections"
+                        className={({ isActive }) =>
+                            `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive ? 'bg-zinc-800 text-[#C5A059]' : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'}`
+                        }
+                    >
+                        <LayoutDashboard size={20} />
+                        <span className="text-sm font-medium tracking-wide">Secciones Home</span>
+                    </NavLink>
+
+                    <NavLink
                         to="/admin/leads"
                         className={({ isActive }) =>
                             `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive ? 'bg-zinc-800 text-[#C5A059]' : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'}`

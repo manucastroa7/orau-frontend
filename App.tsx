@@ -11,6 +11,7 @@ import Products from './pages/admin/Products';
 import Categories from './pages/admin/Categories';
 import Sales from './pages/admin/Sales';
 import Leads from './pages/admin/Leads';
+import Sections from './pages/admin/Sections';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Toaster, toast } from 'sonner';
@@ -20,6 +21,7 @@ import WhatsAppFloat from './components/WhatsAppFloat';
 const PublicHome: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
+    const [sections, setSections] = useState<any[]>([]);
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [showLogin, setShowLogin] = useState(false);
@@ -46,12 +48,14 @@ const PublicHome: React.FC = () => {
 
     const loadData = async () => {
         try {
-            const [productsData, categoriesData] = await Promise.all([
+            const [productsData, categoriesData, sectionsData] = await Promise.all([
                 api.getProducts(),
-                api.getCategories()
+                api.getCategories(),
+                api.getSections()
             ]);
             setProducts(productsData);
             setCategories(categoriesData);
+            setSections(sectionsData);
         } catch (error) {
             console.error('Error loading data', error);
         }
@@ -187,48 +191,122 @@ const PublicHome: React.FC = () => {
             </section >
 
             {/* Product Grid */}
-            < section id="products" className="py-32 px-6 bg-brand-cream relative overflow-hidden" >
-                {/* Subtle pattern background */}
-                < div className="absolute top-0 right-0 p-20 text-[#C5A059] opacity-[0.03] pointer-events-none" >
-                    {SOL_DE_MAYO_SVG("w-96 h-96")}
-                </div >
-
-                <div className="max-w-7xl mx-auto relative z-10">
-                    <div className="flex flex-col md:flex-row justify-between items-baseline mb-16 gap-4">
-                        <div>
-                            <h2 className="text-5xl brand-font">Nueva Temporada</h2>
-                            <p className="text-xs uppercase tracking-[0.4em] text-brand-taupe mt-4 font-bold">Identidad Austral • Invierno 2025</p>
+            {/* Dynamic Sections */}
+            {sections.length > 0 ? (
+                sections.map(section => (
+                    <section key={section.id} className="py-32 px-6 bg-brand-cream relative overflow-hidden">
+                        {/* Subtle pattern background */}
+                        <div className="absolute top-0 right-0 p-20 text-[#C5A059] opacity-[0.03] pointer-events-none">
+                            {SOL_DE_MAYO_SVG("w-96 h-96")}
                         </div>
-                        <div className="flex space-x-8 text-[10px] uppercase tracking-widest border-b border-zinc-200 pb-2 overflow-x-auto">
-                            <button
-                                onClick={() => toggleCategory('all')}
-                                className={`pb-2 transition-colors ${selectedCategories.length === 0 ? 'font-bold border-b-2 border-brand-taupe' : 'hover:text-brand-taupe'}`}
-                            >
-                                Todos
-                            </button>
-                            {categories.map(cat => (
+
+                        <div className="max-w-7xl mx-auto relative z-10">
+                            {/* Section Header */}
+                            <div className="mb-16">
+                                <h2 className="text-5xl brand-font">{section.title}</h2>
+                                {section.subtitle && (
+                                    <p className="text-xs uppercase tracking-[0.4em] text-brand-taupe mt-4 font-bold">{section.subtitle}</p>
+                                )}
+                            </div>
+
+                            {/* Section Content */}
+                            {section.type === 'PRODUCT_GRID' && (
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-12">
+                                    {products
+                                        .filter(p => {
+                                            const content = section.content || {};
+
+                                            // Manual Mode
+                                            if (content.mode === 'MANUAL') {
+                                                return content.productIds?.includes(p.id);
+                                            }
+
+                                            // Category Mode (Default)
+                                            // 1. If categoryIds exists and is not empty, check if product category is in list
+                                            if (content.categoryIds && content.categoryIds.length > 0) {
+                                                const catId = p.categoryRelation?.id || p.category; // Handle population or string
+                                                return content.categoryIds.includes(catId);
+                                            }
+
+                                            // 2. Legacy: content.categoryId
+                                            if (content.categoryId) {
+                                                const catId = p.categoryRelation?.id || p.category;
+                                                return catId === content.categoryId;
+                                            }
+
+                                            // 3. Fallback: Show all
+                                            return true;
+                                        })
+                                        .map(product => (
+                                            <ProductCard
+                                                key={product.id}
+                                                product={product}
+                                                onClick={setSelectedProduct}
+                                            />
+                                        ))}
+                                </div>
+                            )}
+
+                            {section.type === 'BANNER' && section.content?.imageUrl && (
+                                <div className="w-full h-96 relative overflow-hidden rounded-lg">
+                                    <img src={section.content.imageUrl} alt={section.title} className="w-full h-full object-cover" />
+                                </div>
+                            )}
+
+                            {section.type === 'TEXT' && section.content?.textBody && (
+                                <div className="max-w-3xl mx-auto text-center">
+                                    <p className="text-lg text-zinc-600 leading-loose">{section.content.textBody}</p>
+                                </div>
+                            )}
+                        </div>
+                    </section>
+                ))
+            ) : (
+                /* Fallback: All Products (Legacy View) */
+                <section id="products" className="py-32 px-6 bg-brand-cream relative overflow-hidden">
+                    {/* ... (Original content) ... */}
+                    <div className="absolute top-0 right-0 p-20 text-[#C5A059] opacity-[0.03] pointer-events-none">
+                        {SOL_DE_MAYO_SVG("w-96 h-96")}
+                    </div>
+
+                    <div className="max-w-7xl mx-auto relative z-10">
+                        <div className="flex flex-col md:flex-row justify-between items-baseline mb-16 gap-4">
+                            <div>
+                                <h2 className="text-5xl brand-font">Nueva Temporada</h2>
+                                <p className="text-xs uppercase tracking-[0.4em] text-brand-taupe mt-4 font-bold">Identidad Austral • Invierno 2025</p>
+                            </div>
+
+                            <div className="flex space-x-8 text-[10px] uppercase tracking-widest border-b border-zinc-200 pb-2 overflow-x-auto">
                                 <button
-                                    key={cat.id}
-                                    onClick={() => toggleCategory(cat.id)}
-                                    className={`pb-2 transition-colors whitespace-nowrap ${selectedCategories.includes(cat.id) ? 'font-bold border-b-2 border-brand-taupe' : 'hover:text-brand-taupe'}`}
+                                    onClick={() => toggleCategory('all')}
+                                    className={`pb-2 transition-colors ${selectedCategories.length === 0 ? 'font-bold border-b-2 border-brand-taupe' : 'hover:text-brand-taupe'}`}
                                 >
-                                    {cat.name}
+                                    Todos
                                 </button>
+                                {categories.map(cat => (
+                                    <button
+                                        key={cat.id}
+                                        onClick={() => toggleCategory(cat.id)}
+                                        className={`pb-2 transition-colors whitespace-nowrap ${selectedCategories.includes(cat.id) ? 'font-bold border-b-2 border-brand-taupe' : 'hover:text-brand-taupe'}`}
+                                    >
+                                        {cat.name}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-12">
+                            {filteredProducts.map(product => (
+                                <ProductCard
+                                    key={product.id}
+                                    product={product}
+                                    onClick={setSelectedProduct}
+                                />
                             ))}
                         </div>
                     </div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-12">
-                        {filteredProducts.map(product => (
-                            <ProductCard
-                                key={product.id}
-                                product={product}
-                                onClick={setSelectedProduct}
-                            />
-                        ))}
-                    </div>
-                </div>
-            </section >
+                </section>
+            )}
 
             {/* Footer */}
             < footer className="bg-zinc-950 text-white py-24 px-6 relative overflow-hidden" >
@@ -497,6 +575,7 @@ const App: React.FC = () => {
                             <Route path="categories" element={<Categories />} />
                             <Route path="sales" element={<Sales />} />
                             <Route path="leads" element={<Leads />} />
+                            <Route path="sections" element={<Sections />} />
                         </Route>
                     </Route>
                 </Routes>

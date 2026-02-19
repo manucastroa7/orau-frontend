@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Product, Category, Sale } from '../types';
+import { Product, Category, Sale, Section } from '../types';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
@@ -93,5 +93,30 @@ export const api = {
 
     async deleteLead(id: string): Promise<void> {
         await axios.delete(`${API_URL}/leads/${id}`);
+    },
+
+    // Sections (CMS)
+    async getSections(): Promise<Section[]> {
+        const response = await axios.get(`${API_URL}/sections`);
+        return response.data;
+    },
+
+    async getSectionsAdmin(): Promise<Section[]> {
+        const response = await axios.get(`${API_URL}/sections/admin`);
+        return response.data;
+    },
+
+    async createSection(section: Partial<Section>): Promise<Section> {
+        const response = await axios.post(`${API_URL}/sections`, section);
+        return response.data;
+    },
+
+    async updateSection(id: string, section: Partial<Section>): Promise<Section> {
+        const response = await axios.patch(`${API_URL}/sections/${id}`, section);
+        return response.data;
+    },
+
+    async deleteSection(id: string): Promise<void> {
+        await axios.delete(`${API_URL}/sections/${id}`);
     }
 };
