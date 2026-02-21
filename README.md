@@ -26,7 +26,7 @@ El Frontend de ORAU es una interfaz moderna e interactiva diseñada para la gest
    ```
 
 ## 🔗 Enlaces Relacionados
-- [Repositorio Backend](../backend)
+- [Repositorio Backend](https://github.com/manucastroa7/orau-backend)
 
 ---
 Desarrollado para **Orgullo Austral**.
