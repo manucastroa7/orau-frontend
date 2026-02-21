@@ -1,20 +1,32 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# ORAU - Frontend Application
 
-# Run and deploy your AI Studio app
+El Frontend de ORAU es una interfaz moderna e interactiva diseñada para la gestión de la marca Orgullo Austral. Permite visualizar productos, gestionar el inventario y administrar las ventas de manera intuitiva.
 
-This contains everything you need to run your app locally.
+## 🛠️ Tecnologías
 
-View your app in AI Studio: https://ai.studio/apps/drive/1XOlEHoUkR6ncY8g5UbW7OUt2ArteUG5p
+- **Framework**: [React 19](https://react.dev/)
+- **Herramienta de Construcción**: [Vite](https://vitejs.dev/)
+- **Estilos**: Tailwind CSS
+- **Iconos**: Lucide React
+- **Notificaciones**: Sonner
+- **Peticiones**: Axios
 
-## Run Locally
+## 🚀 Instalación y Ejecución
 
-**Prerequisites:**  Node.js
+### Pasos
+1. Entra al directorio: `cd frontend`
+2. Instala las dependencias:
+   ```bash
+   npm install
+   ```
+3. Configura las variables de entorno si son necesarias (API URL).
+4. Inicia el servidor de desarrollo:
+   ```bash
+   npm run dev
+   ```
 
+## 🔗 Enlaces Relacionados
+- [Repositorio Backend](../backend)
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+---
+Desarrollado para **Orgullo Austral**.
