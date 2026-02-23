@@ -1,10 +1,7 @@
 
-export enum Size {
-  XS = 'XS',
-  S = 'S',
-  M = 'M',
-  L = 'L',
-  XL = 'XL'
+export interface Size {
+  id: string;
+  name: string;
 }
 
 export interface Category {
@@ -20,6 +17,7 @@ export interface Product {
   price: number;
   stock: Record<string, number>;
   sizes: string[];
+  sizesRelation?: Size[];
   images: string[];
   category: string; // Keep for legacy/display
   categoryRelation?: Category; // For relation

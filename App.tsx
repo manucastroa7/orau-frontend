@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import ProductCard from './components/ProductCard';
+import ProductCarousel from './components/ProductCarousel';
 import { Product, Size, Category } from './types';
 import { SOL_DE_MAYO_SVG } from './constants';
 import { api } from './services/api';
@@ -12,6 +13,7 @@ import Categories from './pages/admin/Categories';
 import Sales from './pages/admin/Sales';
 import Leads from './pages/admin/Leads';
 import Sections from './pages/admin/Sections';
+import Sizes from './pages/admin/Sizes';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Toaster, toast } from 'sonner';
@@ -211,40 +213,33 @@ const PublicHome: React.FC = () => {
 
                             {/* Section Content */}
                             {section.type === 'PRODUCT_GRID' && (
-                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-12">
-                                    {products
-                                        .filter(p => {
-                                            const content = section.content || {};
+                                <ProductCarousel
+                                    products={products.filter(p => {
+                                        const content = section.content || {};
 
-                                            // Manual Mode
-                                            if (content.mode === 'MANUAL') {
-                                                return content.productIds?.includes(p.id);
-                                            }
+                                        // Manual Mode
+                                        if (content.mode === 'MANUAL') {
+                                            return content.productIds?.includes(p.id);
+                                        }
 
-                                            // Category Mode (Default)
-                                            // 1. If categoryIds exists and is not empty, check if product category is in list
-                                            if (content.categoryIds && content.categoryIds.length > 0) {
-                                                const catId = p.categoryRelation?.id || p.category; // Handle population or string
-                                                return content.categoryIds.includes(catId);
-                                            }
+                                        // Category Mode (Default)
+                                        // 1. If categoryIds exists and is not empty, check if product category is in list
+                                        if (content.categoryIds && content.categoryIds.length > 0) {
+                                            const catId = p.categoryRelation?.id || p.category; // Handle population or string
+                                            return content.categoryIds.includes(catId);
+                                        }
 
-                                            // 2. Legacy: content.categoryId
-                                            if (content.categoryId) {
-                                                const catId = p.categoryRelation?.id || p.category;
-                                                return catId === content.categoryId;
-                                            }
+                                        // 2. Legacy: content.categoryId
+                                        if (content.categoryId) {
+                                            const catId = p.categoryRelation?.id || p.category;
+                                            return catId === content.categoryId;
+                                        }
 
-                                            // 3. Fallback: Show all
-                                            return true;
-                                        })
-                                        .map(product => (
-                                            <ProductCard
-                                                key={product.id}
-                                                product={product}
-                                                onClick={setSelectedProduct}
-                                            />
-                                        ))}
-                                </div>
+                                        // 3. Fallback: Show all
+                                        return true;
+                                    })}
+                                    onProductClick={setSelectedProduct}
+                                />
                             )}
 
                             {section.type === 'BANNER' && section.content?.imageUrl && (
@@ -272,8 +267,8 @@ const PublicHome: React.FC = () => {
                     <div className="max-w-7xl mx-auto relative z-10">
                         <div className="flex flex-col md:flex-row justify-between items-baseline mb-16 gap-4">
                             <div>
-                                <h2 className="text-5xl brand-font">Nueva Temporada</h2>
-                                <p className="text-xs uppercase tracking-[0.4em] text-brand-taupe mt-4 font-bold">Identidad Austral • Invierno 2025</p>
+                                <h2 className="text-5xl brand-font">Primer Lanzamiento</h2>
+                                <p className="text-xs uppercase tracking-[0.4em] text-brand-taupe mt-4 font-bold">Identidad Austral • 2026</p>
                             </div>
 
                             <div className="flex space-x-8 text-[10px] uppercase tracking-widest border-b border-zinc-200 pb-2 overflow-x-auto">
@@ -295,15 +290,10 @@ const PublicHome: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-12">
-                            {filteredProducts.map(product => (
-                                <ProductCard
-                                    key={product.id}
-                                    product={product}
-                                    onClick={setSelectedProduct}
-                                />
-                            ))}
-                        </div>
+                        <ProductCarousel
+                            products={filteredProducts}
+                            onProductClick={setSelectedProduct}
+                        />
                     </div>
                 </section>
             )}
@@ -576,6 +566,7 @@ const App: React.FC = () => {
                             <Route path="sales" element={<Sales />} />
                             <Route path="leads" element={<Leads />} />
                             <Route path="sections" element={<Sections />} />
+                            <Route path="sizes" element={<Sizes />} />
                         </Route>
                     </Route>
                 </Routes>

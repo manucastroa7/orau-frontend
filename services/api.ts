@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Product, Category, Sale, Section } from '../types';
+import { Product, Category, Sale, Section, Size } from '../types';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
@@ -118,5 +118,25 @@ export const api = {
 
     async deleteSection(id: string): Promise<void> {
         await axios.delete(`${API_URL}/sections/${id}`);
+    },
+
+    // Sizes methods
+    async getSizes(): Promise<Size[]> {
+        const response = await axios.get(`${API_URL}/sizes`);
+        return response.data;
+    },
+
+    async createSize(size: Partial<Size>): Promise<Size> {
+        const response = await axios.post(`${API_URL}/sizes`, size);
+        return response.data;
+    },
+
+    async updateSize(id: string, size: Partial<Size>): Promise<Size> {
+        const response = await axios.patch(`${API_URL}/sizes/${id}`, size);
+        return response.data;
+    },
+
+    async deleteSize(id: string): Promise<void> {
+        await axios.delete(`${API_URL}/sizes/${id}`);
     }
 };

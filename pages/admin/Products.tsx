@@ -10,6 +10,7 @@ import ProductCard from '../../components/ProductCard';
 const Products: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
+    const [availableSizes, setAvailableSizes] = useState<Size[]>([]);
     const [showAddForm, setShowAddForm] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [cropperOpen, setCropperOpen] = useState(false);
@@ -28,7 +29,17 @@ const Products: React.FC = () => {
     useEffect(() => {
         loadProducts();
         loadCategories();
+        loadSizes();
     }, []);
+
+    const loadSizes = async () => {
+        try {
+            const data = await api.getSizes();
+            setAvailableSizes(data);
+        } catch (error) {
+            console.error('Error loading sizes', error);
+        }
+    };
 
     const loadProducts = async () => {
         try {
@@ -109,6 +120,11 @@ const Products: React.FC = () => {
             delete payload.categoryId; // Remove aux field
 
             console.log('Submitting Product Payload:', payload);
+
+            // Map sizes back to relations for the backend
+            payload.sizesRelation = availableSizes
+                .filter(s => formData.sizes.includes(s.name))
+                .map(s => ({ id: s.id }));
 
             if (editingId) {
                 const updated = await api.updateProduct(editingId, payload);
@@ -289,6 +305,7 @@ const Products: React.FC = () => {
                                     required
                                     className="w-full bg-zinc-50 border border-zinc-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-zinc-200 focus:border-zinc-400 outline-none transition-all"
                                     placeholder="Ej. Buzo Oversized Black"
+                                    value={formData.name}
                                     onChange={e => {
                                         const val = e.target.value;
                                         setFormData(prev => ({ ...prev, name: val }));
@@ -300,6 +317,7 @@ const Products: React.FC = () => {
                                 <select
                                     required
                                     className="w-full bg-zinc-50 border border-zinc-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-zinc-200 focus:border-zinc-400 outline-none transition-all"
+                                    value={formData.categoryId}
                                     onChange={e => {
                                         const val = e.target.value;
                                         setFormData(prev => ({ ...prev, categoryId: val }));
@@ -321,6 +339,7 @@ const Products: React.FC = () => {
                                     type="number"
                                     className="w-full bg-zinc-50 border border-zinc-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-zinc-200 focus:border-zinc-400 outline-none transition-all"
                                     placeholder="0.00"
+                                    value={formData.price}
                                     onChange={e => {
                                         const val = Number(e.target.value);
                                         setFormData(prev => ({ ...prev, price: val }));
@@ -336,6 +355,7 @@ const Products: React.FC = () => {
                                 rows={4}
                                 className="w-full bg-zinc-50 border border-zinc-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-zinc-200 focus:border-zinc-400 outline-none transition-all resize-none"
                                 placeholder="Detalles del producto..."
+                                value={formData.description}
                                 onChange={e => {
                                     const val = e.target.value;
                                     setFormData(prev => ({ ...prev, description: val }));
@@ -455,17 +475,17 @@ const Products: React.FC = () => {
                         <div className="space-y-3">
                             <label className="text-xs font-semibold text-zinc-600 uppercase tracking-wide block">Talles Disponibles</label>
                             <div className="flex flex-wrap gap-3">
-                                {Object.values(Size).map(size => (
+                                {availableSizes.map(size => (
                                     <button
-                                        key={size}
+                                        key={size.id}
                                         type="button"
-                                        onClick={() => handleSizeToggle(size)}
-                                        className={`h-10 w-14 rounded-lg text-sm font-medium transition-all ${formData.sizes.includes(size)
+                                        onClick={() => handleSizeToggle(size.name)}
+                                        className={`h-10 w-14 rounded-lg text-sm font-medium transition-all ${formData.sizes.includes(size.name)
                                             ? 'bg-zinc-900 text-white shadow-md transform scale-105'
                                             : 'bg-white border border-zinc-200 text-zinc-600 hover:border-zinc-400'
                                             }`}
                                     >
-                                        {size}
+                                        {size.name}
                                     </button>
                                 ))}
                             </div>
