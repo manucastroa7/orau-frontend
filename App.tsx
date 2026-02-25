@@ -194,109 +194,111 @@ const PublicHome: React.FC = () => {
 
             {/* Product Grid */}
             {/* Dynamic Sections */}
-            {sections.length > 0 ? (
-                sections.map(section => (
-                    <section key={section.id} className="py-32 px-6 bg-brand-cream relative overflow-hidden">
-                        {/* Subtle pattern background */}
+            <div id="products">
+                {sections.length > 0 ? (
+                    sections.map(section => (
+                        <section key={section.id} className="py-32 px-6 bg-brand-cream relative overflow-hidden">
+                            {/* Subtle pattern background */}
+                            <div className="absolute top-0 right-0 p-20 text-[#C5A059] opacity-[0.03] pointer-events-none">
+                                {SOL_DE_MAYO_SVG("w-96 h-96")}
+                            </div>
+
+                            <div className="max-w-7xl mx-auto relative z-10">
+                                {/* Section Header */}
+                                <div className="mb-16">
+                                    <h2 className="text-5xl brand-font">{section.title}</h2>
+                                    {section.subtitle && (
+                                        <p className="text-xs uppercase tracking-[0.4em] text-brand-taupe mt-4 font-bold">{section.subtitle}</p>
+                                    )}
+                                </div>
+
+                                {/* Section Content */}
+                                {section.type === 'PRODUCT_GRID' && (
+                                    <ProductCarousel
+                                        products={products.filter(p => {
+                                            const content = section.content || {};
+
+                                            // Manual Mode
+                                            if (content.mode === 'MANUAL') {
+                                                return content.productIds?.includes(p.id);
+                                            }
+
+                                            // Category Mode (Default)
+                                            // 1. If categoryIds exists and is not empty, check if product category is in list
+                                            if (content.categoryIds && content.categoryIds.length > 0) {
+                                                const catId = p.categoryRelation?.id || p.category; // Handle population or string
+                                                return content.categoryIds.includes(catId);
+                                            }
+
+                                            // 2. Legacy: content.categoryId
+                                            if (content.categoryId) {
+                                                const catId = p.categoryRelation?.id || p.category;
+                                                return catId === content.categoryId;
+                                            }
+
+                                            // 3. Fallback: Show all
+                                            return true;
+                                        })}
+                                        onProductClick={setSelectedProduct}
+                                    />
+                                )}
+
+                                {section.type === 'BANNER' && section.content?.imageUrl && (
+                                    <div className="w-full h-96 relative overflow-hidden rounded-lg">
+                                        <img src={section.content.imageUrl} alt={section.title} className="w-full h-full object-cover" />
+                                    </div>
+                                )}
+
+                                {section.type === 'TEXT' && section.content?.textBody && (
+                                    <div className="max-w-3xl mx-auto text-center">
+                                        <p className="text-lg text-zinc-600 leading-loose">{section.content.textBody}</p>
+                                    </div>
+                                )}
+                            </div>
+                        </section>
+                    ))
+                ) : (
+                    /* Fallback: All Products (Legacy View) */
+                    <section className="py-32 px-6 bg-brand-cream relative overflow-hidden">
+                        {/* ... (Original content) ... */}
                         <div className="absolute top-0 right-0 p-20 text-[#C5A059] opacity-[0.03] pointer-events-none">
                             {SOL_DE_MAYO_SVG("w-96 h-96")}
                         </div>
 
                         <div className="max-w-7xl mx-auto relative z-10">
-                            {/* Section Header */}
-                            <div className="mb-16">
-                                <h2 className="text-5xl brand-font">{section.title}</h2>
-                                {section.subtitle && (
-                                    <p className="text-xs uppercase tracking-[0.4em] text-brand-taupe mt-4 font-bold">{section.subtitle}</p>
-                                )}
+                            <div className="flex flex-col md:flex-row justify-between items-baseline mb-16 gap-4">
+                                <div>
+                                    <h2 className="text-5xl brand-font">Primer Lanzamiento</h2>
+                                    <p className="text-xs uppercase tracking-[0.4em] text-brand-taupe mt-4 font-bold">Identidad Austral • 2026</p>
+                                </div>
+
+                                <div className="flex space-x-8 text-[10px] uppercase tracking-widest border-b border-zinc-200 pb-2 overflow-x-auto">
+                                    <button
+                                        onClick={() => toggleCategory('all')}
+                                        className={`pb-2 transition-colors ${selectedCategories.length === 0 ? 'font-bold border-b-2 border-brand-taupe' : 'hover:text-brand-taupe'}`}
+                                    >
+                                        Todos
+                                    </button>
+                                    {categories.map(cat => (
+                                        <button
+                                            key={cat.id}
+                                            onClick={() => toggleCategory(cat.id)}
+                                            className={`pb-2 transition-colors whitespace-nowrap ${selectedCategories.includes(cat.id) ? 'font-bold border-b-2 border-brand-taupe' : 'hover:text-brand-taupe'}`}
+                                        >
+                                            {cat.name}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
 
-                            {/* Section Content */}
-                            {section.type === 'PRODUCT_GRID' && (
-                                <ProductCarousel
-                                    products={products.filter(p => {
-                                        const content = section.content || {};
-
-                                        // Manual Mode
-                                        if (content.mode === 'MANUAL') {
-                                            return content.productIds?.includes(p.id);
-                                        }
-
-                                        // Category Mode (Default)
-                                        // 1. If categoryIds exists and is not empty, check if product category is in list
-                                        if (content.categoryIds && content.categoryIds.length > 0) {
-                                            const catId = p.categoryRelation?.id || p.category; // Handle population or string
-                                            return content.categoryIds.includes(catId);
-                                        }
-
-                                        // 2. Legacy: content.categoryId
-                                        if (content.categoryId) {
-                                            const catId = p.categoryRelation?.id || p.category;
-                                            return catId === content.categoryId;
-                                        }
-
-                                        // 3. Fallback: Show all
-                                        return true;
-                                    })}
-                                    onProductClick={setSelectedProduct}
-                                />
-                            )}
-
-                            {section.type === 'BANNER' && section.content?.imageUrl && (
-                                <div className="w-full h-96 relative overflow-hidden rounded-lg">
-                                    <img src={section.content.imageUrl} alt={section.title} className="w-full h-full object-cover" />
-                                </div>
-                            )}
-
-                            {section.type === 'TEXT' && section.content?.textBody && (
-                                <div className="max-w-3xl mx-auto text-center">
-                                    <p className="text-lg text-zinc-600 leading-loose">{section.content.textBody}</p>
-                                </div>
-                            )}
+                            <ProductCarousel
+                                products={filteredProducts}
+                                onProductClick={setSelectedProduct}
+                            />
                         </div>
                     </section>
-                ))
-            ) : (
-                /* Fallback: All Products (Legacy View) */
-                <section id="products" className="py-32 px-6 bg-brand-cream relative overflow-hidden">
-                    {/* ... (Original content) ... */}
-                    <div className="absolute top-0 right-0 p-20 text-[#C5A059] opacity-[0.03] pointer-events-none">
-                        {SOL_DE_MAYO_SVG("w-96 h-96")}
-                    </div>
-
-                    <div className="max-w-7xl mx-auto relative z-10">
-                        <div className="flex flex-col md:flex-row justify-between items-baseline mb-16 gap-4">
-                            <div>
-                                <h2 className="text-5xl brand-font">Primer Lanzamiento</h2>
-                                <p className="text-xs uppercase tracking-[0.4em] text-brand-taupe mt-4 font-bold">Identidad Austral • 2026</p>
-                            </div>
-
-                            <div className="flex space-x-8 text-[10px] uppercase tracking-widest border-b border-zinc-200 pb-2 overflow-x-auto">
-                                <button
-                                    onClick={() => toggleCategory('all')}
-                                    className={`pb-2 transition-colors ${selectedCategories.length === 0 ? 'font-bold border-b-2 border-brand-taupe' : 'hover:text-brand-taupe'}`}
-                                >
-                                    Todos
-                                </button>
-                                {categories.map(cat => (
-                                    <button
-                                        key={cat.id}
-                                        onClick={() => toggleCategory(cat.id)}
-                                        className={`pb-2 transition-colors whitespace-nowrap ${selectedCategories.includes(cat.id) ? 'font-bold border-b-2 border-brand-taupe' : 'hover:text-brand-taupe'}`}
-                                    >
-                                        {cat.name}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        <ProductCarousel
-                            products={filteredProducts}
-                            onProductClick={setSelectedProduct}
-                        />
-                    </div>
-                </section>
-            )}
+                )}
+            </div>
 
             {/* Footer */}
             < footer className="bg-zinc-950 text-white py-24 px-6 relative overflow-hidden" >

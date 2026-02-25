@@ -20,7 +20,7 @@ const Navbar: React.FC<NavbarProps> = ({ onAdminClick, isAdmin, onLogout }) => {
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled ? 'bg-white/90 backdrop-blur-md py-4 shadow-sm' : 'bg-transparent py-8'}`}>
       <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
         <div className="flex-1 hidden md:flex space-x-8 text-xs uppercase tracking-[0.2em] font-medium">
-          <a href="#" className="hover:text-brand-taupe transition-colors">Colección</a>
+          <a href="#products" className="hover:text-brand-taupe transition-colors">Colección</a>
           <a href="#about" className="hover:text-brand-taupe transition-colors">Identidad</a>
         </div>
 
