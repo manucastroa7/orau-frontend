@@ -406,7 +406,7 @@ const PublicHome: React.FC = () => {
                                     {SOL_DE_MAYO_SVG("w-10 h-10")}
                                 </div>
                             </div>
-                            <div className="md:w-1/2 p-10 md:p-14 flex flex-col justify-center bg-[#FDFCF9]">
+                            <div className="md:w-1/2 p-8 md:p-12 flex flex-col bg-[#FDFCF9] overflow-hidden">
                                 <div className="flex items-center gap-2 mb-2">
                                     <span className="text-[10px] uppercase tracking-widest text-zinc-400">{selectedProduct.category}</span>
                                     <div className="text-[#C5A059]">
@@ -414,35 +414,44 @@ const PublicHome: React.FC = () => {
                                     </div>
                                 </div>
                                 <h2 className="text-4xl brand-font mb-4">{selectedProduct.name}</h2>
-                                <p className="text-2xl font-light mb-8 text-brand-taupe">{selectedProduct.price}€</p>
-                                <p className="text-zinc-500 text-sm leading-loose mb-10 font-light tracking-wide italic">
-                                    {selectedProduct.description}
-                                </p>
+                                <p className="text-2xl font-light mb-6 text-brand-taupe">{selectedProduct.price}€</p>
 
-                                <div className="mb-12">
-                                    <p className="text-[10px] uppercase tracking-widest font-bold mb-6 text-zinc-400">Talles Disponibles</p>
-                                    <div className="flex flex-wrap gap-4">
-                                        {selectedProduct.sizes
-                                            .filter(size => (selectedProduct.stock?.[size] || 0) > 0)
-                                            .map(size => (
+                                <div className="max-h-[180px] overflow-y-auto custom-scrollbar mb-8 pr-2">
+                                    <p className="text-zinc-500 text-sm leading-loose font-light tracking-wide italic">
+                                        {selectedProduct.description}
+                                    </p>
+                                </div>
+
+                                <div className="mb-10">
+                                    <div className="flex justify-between items-center mb-6">
+                                        <p className="text-[10px] uppercase tracking-widest font-bold text-zinc-400">Talles</p>
+                                        <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest text-brand-taupe font-bold bg-brand-cream px-3 py-1 rounded-full animate-pulse">
+                                            <span>Consultar stock</span>
+                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-wrap gap-3">
+                                        {selectedProduct.sizes.map(size => {
+                                            const hasStock = (selectedProduct.stock?.[size] || 0) > 0;
+                                            return (
                                                 <button
                                                     key={size}
                                                     onClick={() => setSelectedSize(size === selectedSize ? null : size)}
-                                                    className={`w-14 h-14 border text-[10px] font-bold tracking-widest transition-all uppercase ${selectedSize === size
+                                                    className={`w-12 h-12 border text-[10px] font-bold tracking-widest transition-all uppercase flex items-center justify-center ${selectedSize === size
                                                         ? 'bg-zinc-900 text-white border-zinc-900 transform scale-105 shadow-md'
-                                                        : 'border-zinc-200 hover:border-black hover:bg-zinc-50'
+                                                        : hasStock
+                                                            ? 'border-zinc-200 hover:border-black hover:bg-zinc-50'
+                                                            : 'border-zinc-200 text-zinc-400 bg-zinc-50/30 hover:border-brand-taupe'
                                                         }`}
                                                 >
                                                     {size}
                                                 </button>
-                                            ))}
-                                        {selectedProduct.sizes.filter(size => (selectedProduct.stock?.[size] || 0) > 0).length === 0 && (
-                                            <p className="text-xs text-red-400 italic">Sin stock disponible online</p>
-                                        )}
+                                            );
+                                        })}
                                     </div>
                                 </div>
 
-                                <div className="flex gap-4">
+                                <div className="flex gap-4 mt-auto pt-4">
                                     <button
                                         onClick={() => setShowContactForm(true)}
                                         className="flex-1 bg-black text-white py-4 text-[10px] uppercase tracking-[0.2em] font-medium hover:bg-zinc-800 transition-all shadow-xl"
@@ -452,8 +461,10 @@ const PublicHome: React.FC = () => {
                                     <a
                                         href={`https://wa.me/5491137766748?text=${encodeURIComponent(
                                             selectedSize
-                                                ? `Hola, estoy interesado en el producto "${selectedProduct.name}" en talle ${selectedSize}.`
-                                                : `Hola, estoy interesado en el producto "${selectedProduct.name}".`
+                                                ? (selectedProduct.stock?.[selectedSize] || 0) > 0
+                                                    ? `Hola, estoy interesado en el producto "${selectedProduct.name}" en talle ${selectedSize}.`
+                                                    : `Hola, estoy interesado en el producto "${selectedProduct.name}" en talle ${selectedSize}. Les escribo para consultar stock.`
+                                                : `Hola, estoy interesado en el producto "${selectedProduct.name}". Quisiera consultar talles disponibles.`
                                         )}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
