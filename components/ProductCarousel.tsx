@@ -45,7 +45,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ products, onProductCl
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
                 {products.map((product) => (
-                    <div key={product.id} className="min-w-[280px] md:min-w-[320px] lg:min-w-[280px] snap-start">
+                    <div key={product.id} className="w-[280px] md:w-[320px] shrink-0 snap-start">
                         <ProductCard
                             product={product}
                             onClick={onProductClick}
