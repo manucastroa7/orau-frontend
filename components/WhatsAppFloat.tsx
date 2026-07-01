@@ -3,7 +3,7 @@ import React from 'react';
 const WhatsAppFloat: React.FC = () => {
     // Default number, should be updated by user
     const phoneNumber = '34687614676';
-    const message = 'Hola, estoy interesado en ORAU.';
+    const message = '¡Hola! Me gustaría conocer más sobre la colección de ORAU.';
 
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 
