@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Product, Category, Sale, Section, Size } from '../types';
+import { Product, Category, Sale, Section, Size, User } from '../types';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
@@ -138,5 +138,20 @@ export const api = {
 
     async deleteSize(id: string): Promise<void> {
         await axios.delete(`${API_URL}/sizes/${id}`);
+    },
+
+    // Users methods
+    async getUsers(): Promise<User[]> {
+        const response = await axios.get(`${API_URL}/users`);
+        return response.data;
+    },
+
+    async createUser(user: Partial<User>): Promise<User> {
+        const response = await axios.post(`${API_URL}/users`, user);
+        return response.data;
+    },
+
+    async deleteUser(id: string): Promise<void> {
+        await axios.delete(`${API_URL}/users/${id}`);
     }
 };

@@ -16,29 +16,64 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     useEffect(() => {
-        // Check local storage for existing token on mount
-        const token = localStorage.getItem('token');
-        const userStr = localStorage.getItem('user');
-        if (token && userStr) {
-            try {
-                const user = JSON.parse(userStr);
-                setAuth({ user, token, isAuthenticated: true });
-            } catch (e) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
+        const checkExpiration = () => {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            const loginTimeStr = localStorage.getItem('loginTime');
+
+            if (token && userStr && loginTimeStr) {
+                const loginTime = parseInt(loginTimeStr, 10);
+                const sixHours = 6 * 60 * 60 * 1000; // 6 hours
+                if (Date.now() - loginTime > sixHours) {
+                    // Expired
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    localStorage.removeItem('loginTime');
+                    setAuth({ user: null, token: null, isAuthenticated: false });
+                    return true;
+                }
+                return false;
+            }
+            return false;
+        };
+
+        const isExpired = checkExpiration();
+
+        if (!isExpired) {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            if (token && userStr) {
+                try {
+                    const user = JSON.parse(userStr);
+                    setAuth({ user, token, isAuthenticated: true });
+                } catch (e) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    localStorage.removeItem('loginTime');
+                }
             }
         }
+
+        const interval = setInterval(() => {
+            if (localStorage.getItem('token')) {
+                checkExpiration();
+            }
+        }, 30000); // Check every 30 seconds
+
+        return () => clearInterval(interval);
     }, []);
 
     const login = (user: User, token: string) => {
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('loginTime', Date.now().toString());
         setAuth({ user, token, isAuthenticated: true });
     };
 
     const logout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        localStorage.removeItem('loginTime');
         setAuth({ user: null, token: null, isAuthenticated: false });
     };
 

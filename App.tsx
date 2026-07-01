@@ -14,6 +14,7 @@ import Sales from './pages/admin/Sales';
 import Leads from './pages/admin/Leads';
 import Sections from './pages/admin/Sections';
 import Sizes from './pages/admin/Sizes';
+import Users from './pages/admin/Users';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Toaster, toast } from 'sonner';
@@ -580,6 +581,7 @@ const App: React.FC = () => {
                             <Route path="leads" element={<Leads />} />
                             <Route path="sections" element={<Sections />} />
                             <Route path="sizes" element={<Sizes />} />
+                            <Route path="users" element={<Users />} />
                         </Route>
                     </Route>
                 </Routes>

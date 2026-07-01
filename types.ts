@@ -39,8 +39,10 @@ export interface Sale {
 
 export interface User {
   id: string;
-  username: string;
-  role: 'admin';
+  username?: string;
+  email?: string;
+  password?: string;
+  role: string;
 }
 
 export interface AuthState {

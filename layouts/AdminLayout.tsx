@@ -1,10 +1,10 @@
 import React from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LayoutDashboard, Package, Truck, LogOut, Tags, ExternalLink, DollarSign, Users, Ruler } from 'lucide-react';
+import { LayoutDashboard, Package, Truck, LogOut, Tags, ExternalLink, DollarSign, Users, Ruler, UserCog } from 'lucide-react';
 
 const AdminLayout: React.FC = () => {
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -90,6 +90,18 @@ const AdminLayout: React.FC = () => {
                         <Users size={20} />
                         <span className="text-sm font-medium tracking-wide">Clientes</span>
                     </NavLink>
+
+                    {user?.email === 'orau.orgulloaustral@gmail.com' && (
+                        <NavLink
+                            to="/admin/users"
+                            className={({ isActive }) =>
+                                `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive ? 'bg-zinc-800 text-[#C5A059]' : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'}`
+                            }
+                        >
+                            <UserCog size={20} />
+                            <span className="text-sm font-medium tracking-wide">Usuarios</span>
+                        </NavLink>
+                    )}
 
                     <a
                         href="/"
