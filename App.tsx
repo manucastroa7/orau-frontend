@@ -461,7 +461,7 @@ const PublicHome: React.FC = () => {
                                         Email
                                     </button>
                                     <a
-                                        href={`https://wa.me/5491137766748?text=${encodeURIComponent(
+                                        href={`https://wa.me/34687614676?text=${encodeURIComponent(
                                             selectedSize
                                                 ? (selectedProduct.stock?.[selectedSize] || 0) > 0
                                                     ? `Hola, estoy interesado en el producto "${selectedProduct.name}" en talle ${selectedSize}.`
